@@ -22,11 +22,11 @@ window.log(`DEBUG:  #### INJECT CODE EXECUTED!!!`);
 //
 //}
 
-quizFillName = function (itemPhone, string) {
+quizFillName = function (itemMessageSender, string) {
     var searchStr = string;
-    var name = itemPhone.contact.pushname;
+    var name = itemMessageSender.contact.pushname;
     // window.log("TEST: in function qFN");
-    if (name == undefined) name = itemPhone.contact.name;
+    if (name == undefined) name = itemMessageSender.contact.name;
     //     window.log("TEST: in function qFN: name = " + name);
     if ((name == undefined) || (name.indexOf('#name') >= 0)) {
         name = "";
@@ -39,9 +39,9 @@ quizFillName = function (itemPhone, string) {
     return searchStr;
 }
 
-quizFillCorrectReplies = function (itemPhone, string) {
+quizFillCorrectReplies = function (itemMessageSender, string) {
     var searchStr = string;
-    var itemQuiz = itemPhone.quiz.find(r => r.id === interaction.quiz.id);
+    var itemQuiz = itemMessageSender.quiz.find(r => r.id === interaction.quiz.id);
     var correctReplies = itemQuiz.question.filter(o => o.reply.isCorrect == true);
     while (searchStr.indexOf('#correct_replies') >= 0) {
         searchStr = searchStr.replace('#correct_replies', correctReplies.length);
@@ -49,9 +49,9 @@ quizFillCorrectReplies = function (itemPhone, string) {
     return searchStr;
 }
 
-quizFillIncorrectReplies = function (itemPhone, string) {
+quizFillIncorrectReplies = function (itemMessageSender, string) {
     var searchStr = string;
-    var itemQuiz = itemPhone.quiz.find(r => r.id === interaction.quiz.id);
+    var itemQuiz = itemMessageSender.quiz.find(r => r.id === interaction.quiz.id);
     var incorrectReplies = itemQuiz.question.filter(o => o.reply.isCorrect == false);
     while (searchStr.indexOf('#incorrect_replies') >= 0) {
         searchStr = searchStr.replace('#incorrect_replies', incorrectReplies.length);
@@ -187,35 +187,35 @@ WAPI.waitNewMessages(false, async (data) => {
                 window.log("DEBUG: quiz: current quiz '" + interaction.quiz.id + "' is NOT active");
 
             // set a single ChatId to test
-            var itemPhone = chatIdStore.chat.find(o => o.chatId == message.chatId);
+            var itemMessageSender = chatIdStore.chat.find(o => o.chatId == message.chatId);
 
-            // STATUS of CHAT-ID? Generate itemPhone object
-            if (itemPhone == undefined) {
-                window.log('DEBUG: itemPhone: chatId does not exist');
+            // STATUS of CHAT-ID? Generate itemMessageSender object
+            if (itemMessageSender == undefined) {
+                window.log('DEBUG: itemMessageSender: chatId does not exist');
                 chatIdStore.chat.push({"chatId": message.chatId,"quiz":[]});
-                itemPhone = chatIdStore.chat.find(o => o.chatId === message.chatId);
+                itemMessageSender = chatIdStore.chat.find(o => o.chatId === message.chatId);
                 window.log("DEBUG: KnownChatIds " + JSON.stringify(KnownChatIds));
                 if (KnownChatIds.includes(message.chatId._serialized)) {
-                      itemPhone.contact = WAPI.getContact(message.chatId);
+                      itemMessageSender.contact = WAPI.getContact(message.chatId);
                       window.log("DEBUG: message.chatId is in KnownChatIds");
-                      window.log(itemPhone.contact);
+                      window.log(itemMessageSender.contact);
                 }
-                window.log("DEBUG: itemPhone: chatId created for " + itemPhone.chatId)
+                window.log("DEBUG: itemMessageSender: chatId created for " + itemMessageSender.chatId)
             }
 
-            // IS CURRENT QUIZ a NEW QUIZ for CHAT-ID? Generate itemPhone.quiz
-            var itemQuiz = itemPhone.quiz.find(o => o.id === interaction.quiz.id);
+            // IS CURRENT QUIZ a NEW QUIZ for CHAT-ID? Generate itemMessageSender.quiz
+            var itemQuiz = itemMessageSender.quiz.find(o => o.id === interaction.quiz.id);
             if (itemQuiz == undefined) {
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' does NOT exist in " + itemPhone.chatId + "'s  profile");
-                // Populate itemPhone.itemQuiz with current quiz object
-                itemPhone.quiz.push({"id":interaction.quiz.id,"preamble":interaction.quiz.preamble,"question":[],"postamble":interaction.quiz.postamble,"isCompleted":false});
-                itemQuiz = itemPhone.quiz.find(o => o.id === interaction.quiz.id);
+                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' does NOT exist in " + itemMessageSender.chatId + "'s  profile");
+                // Populate itemMessageSender.itemQuiz with current quiz object
+                itemMessageSender.quiz.push({"id":interaction.quiz.id,"preamble":interaction.quiz.preamble,"question":[],"postamble":interaction.quiz.postamble,"isCompleted":false});
+                itemQuiz = itemMessageSender.quiz.find(o => o.id === interaction.quiz.id);
                 for (let q of interaction.quiz.question) {
                     itemQuiz.question.push({"preamble":q.preamble,"postamble":q.postamble,"text":q.text,"answer":q.answer,"isCompleted":false,"reply":{}});
                 }
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' element created for " + itemPhone.chatId + "'s  profile");
+                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' element created for " + itemMessageSender.chatId + "'s  profile");
             } else
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' already exists in " + itemPhone.chatId + "'s  profile");
+                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' already exists in " + itemMessageSender.chatId + "'s  profile");
 
 
             if (itemQuiz.isCompleted == false) {
@@ -243,29 +243,29 @@ WAPI.waitNewMessages(false, async (data) => {
                         window.log("No partial match found");
                     }
                 } else {
-                    window.log("DEBUG: Quiz '" + itemQuiz.id + "' has started for " + itemPhone.chatId);
-                    //window.log("SEND: QUIZ PREAMBLE to " + itemPhone.chatId + " quiz.preamble[]: " + itemQuiz.preamble);
+                    window.log("DEBUG: Quiz '" + itemQuiz.id + "' has started for " + itemMessageSender.chatId);
+                    //window.log("SEND: QUIZ PREAMBLE to " + itemMessageSender.chatId + " quiz.preamble[]: " + itemQuiz.preamble);
                     //response = response.concat('\n', itemQuiz.preamble);
-                    response = quizFillName(itemPhone, itemQuiz.preamble.toString());
+                    response = quizFillName(itemMessageSender, itemQuiz.preamble.toString());
                     window.log("DEBUG: response = " + response);
 
-                    WAPI.sendMessage2(itemPhone.chatId, response);
+                    WAPI.sendMessage2(itemMessageSender.chatId, response);
                     itemQuiz.hasBegun = true;
                 }
 
                 if (itemQuestion != undefined) {
                     if (itemQuiz.preamble != undefined) {
-                        window.log("SEND: QUIZ QUESTION PREAMBLE to " + itemPhone.chatId + " question.preamble[]: " + itemQuestion.preamble);
+                        window.log("SEND: QUIZ QUESTION PREAMBLE to " + itemMessageSender.chatId + " question.preamble[]: " + itemQuestion.preamble);
                         response = itemQuestion.preamble.toString();
-		        response = quizFillName(itemPhone, response);
-                        response = quizFillCorrectReplies(itemPhone, response);
-                        response = quizFillIncorrectReplies(itemPhone, response);
+		        response = quizFillName(itemMessageSender, response);
+                        response = quizFillCorrectReplies(itemMessageSender, response);
+                        response = quizFillIncorrectReplies(itemMessageSender, response);
                         window.log("DEBUG: RESPONSE:" + response);
-                        WAPI.sendMessage2(itemPhone.chatId, response);
+                        WAPI.sendMessage2(itemMessageSender.chatId, response);
 		    }
-                    window.log("SEND: QUIZ QUESTION TEXT to " + itemPhone.chatId + " question.text: " + itemQuestion.text);
+                    window.log("SEND: QUIZ QUESTION TEXT to " + itemMessageSender.chatId + " question.text: " + itemQuestion.text);
                     //response = response.concat('\n\n', itemQuestion.text);
-                    WAPI.sendMessage2(itemPhone.chatId, itemQuestion.text.toString());
+                    WAPI.sendMessage2(itemMessageSender.chatId, itemQuestion.text.toString());
                     // window.log("DEBUG: RESPONSE:" + response);
                     response = "";
                     var itemAnswer = itemQuestion.answer.forEach(o => {
@@ -274,30 +274,30 @@ WAPI.waitNewMessages(false, async (data) => {
                              response = response.concat('\n', o.text);
                         }
                     });
-                    WAPI.sendMessage2(itemPhone.chatId, response);
+                    WAPI.sendMessage2(itemMessageSender.chatId, response);
                 } else {
                     window.log("DEBUG: No unanswered questions found.");
                     if (itemQuiz.postamble != undefined) {
-		        response = quizFillName(itemPhone, itemQuiz.postamble.toString());
-                        response = quizFillCorrectReplies(itemPhone, response);
-                        response = quizFillIncorrectReplies(itemPhone, response);
+		        response = quizFillName(itemMessageSender, itemQuiz.postamble.toString());
+                        response = quizFillCorrectReplies(itemMessageSender, response);
+                        response = quizFillIncorrectReplies(itemMessageSender, response);
 		        response = response.replace('#questions', itemQuiz.question.length);
-                        window.log("SEND: QUIZ POSTAMBLE to " + itemPhone.chatId + " quiz.postamble[]: " + response);
+                        window.log("SEND: QUIZ POSTAMBLE to " + itemMessageSender.chatId + " quiz.postamble[]: " + response);
                         // response = response.concat('\n\n', mixed);
-                        WAPI.sendMessage2(itemPhone.chatId, response);
+                        WAPI.sendMessage2(itemMessageSender.chatId, response);
                     }
                     // Quiz complete. Mark as so.
                     itemQuiz.isCompleted = true;
                 }
 
-                putStoreFile(itemPhone.chatId, JSON.stringify(itemPhone, null, 4));
-                //window.log('DEBUG: chatIdStore updated for '+ itemPhone.chatId);
+                putStoreFile(itemMessageSender.chatId, JSON.stringify(itemMessageSender, null, 4));
+                //window.log('DEBUG: chatIdStore updated for '+ itemMessageSender.chatId);
                 //window.log('FINAL SEND:\n' + response);
                 //if (KnownChatIds.includes(message.chatId._serialized) && response.length > 0) {
-                //    WAPI.sendMessage2(itemPhone.chatId, response);
+                //    WAPI.sendMessage2(itemMessageSender.chatId, response);
                 //}
             } else {
-                window.log("DEBUG: " + itemPhone.chatId  + "has already completed this quiz!!")
+                window.log("DEBUG: " + itemMessageSender.chatId  + "has already completed this quiz!!")
             }
 
             // --- QUIZ END ---
@@ -324,9 +324,9 @@ WAPI.waitNewMessages(false, async (data) => {
                 if ((exactMatch || PartialMatch).file != undefined) {
                     window.getFile((exactMatch || PartialMatch).file).then((base64Data) => {
                         //console.log(file);
-                        window.log("FILE SENDING: "+ (exactMatch || PartialMatch).file + " to " + itemPhone.chatId);
+                        window.log("FILE SENDING: "+ (exactMatch || PartialMatch).file + " to " + itemMessageSender.chatId);
                         WAPI.sendImage(base64Data, message.chatId._serialized, (exactMatch || PartialMatch).file);
-                        window.log("FILE SENT: "+ (exactMatch || PartialMatch).file + " to " + itemPhone.chatId);
+                        window.log("FILE SENT: "+ (exactMatch || PartialMatch).file + " to " + itemMessageSender.chatId);
                     }).catch((error) => {
                         window.log("Error in sending file\n" + error);
                     })
