@@ -57,6 +57,10 @@ async function Main() {
         var chatIdStore = await utils.getDirStore(constants.DEFAULT_CHATID_STORE_DIR);
         chatIdStore = JSON.parse(chatIdStore);
 
+        let quizStorejson = utils.getDirStore(constants.DEFAULT_QUIZ_STORE_DIR);
+        var quizStore = await utils.getDirStore(constants.DEFAULT_QUIZ_STORE_DIR);
+	quizStore = JSON.parse(quizStore);
+        console.log(quizStore);
 	//console.log('chatIdStore = ' + JSON.stringify(chatIdStore, null, 2) + ' =');
 	spinner.start("Downloading chrome\n");
         const browserFetcher = puppeteer.createBrowserFetcher({
@@ -116,6 +120,12 @@ async function Main() {
             quizjson.then((data) => {
                 page.evaluate("var interaction = " + data);
                 //console.log('interaction = |' + data + ' |');
+            }).catch((err) => {
+                console.log("there was an error \n" + err);
+            });
+            quizStorejson.then((data) => {
+                page.evaluate("var quizStore = " + data);
+                //console.log('quizStore = |' + data + ' |');
             }).catch((err) => {
                 console.log("there was an error \n" + err);
             });
