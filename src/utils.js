@@ -30,8 +30,9 @@ this.getDirStore = function (dir) {
     return new Promise((resolve, reject) => {
         //console.log("reading file from " + dir);
 
-        var store = {};
-        store.chat = [];
+        //var store = {};
+        var store = [];
+        // store.chat = [];
 
 	fs.readdir(dir, (err, files) => {
             if (err) {
@@ -45,7 +46,8 @@ this.getDirStore = function (dir) {
                     try {
 			const data = fs.readFileSync(path.join(dir, file), 'utf8');
                         //console.log(data);
-                        store.chat.push(JSON.parse(data));
+                        //store.chat.push(JSON.parse(data));
+                        store.push(JSON.parse(data));
 			//console.log(store);
                     } catch (err) {
 			return reject(err);
