@@ -41,7 +41,7 @@ quizFillName = function (itemMessageSender, string) {
 
 quizFillCorrectReplies = function (itemMessageSender, string) {
     var searchStr = string;
-    var itemQuiz = itemMessageSender.quiz.find(r => r.id === interaction.quiz.id);
+    var itemQuiz = itemMessageSender.quiz.find(r => r.id === itemMessageSender.currentQuizID);
     var correctReplies = itemQuiz.question.filter(o => o.reply.isCorrect == true);
     while (searchStr.indexOf('#correct_replies') >= 0) {
         searchStr = searchStr.replace('#correct_replies', correctReplies.length);
@@ -51,7 +51,7 @@ quizFillCorrectReplies = function (itemMessageSender, string) {
 
 quizFillIncorrectReplies = function (itemMessageSender, string) {
     var searchStr = string;
-    var itemQuiz = itemMessageSender.quiz.find(r => r.id === interaction.quiz.id);
+    var itemQuiz = itemMessageSender.quiz.find(r => r.id === itemMessageSender.currentQuizID);
     var incorrectReplies = itemQuiz.question.filter(o => o.reply.isCorrect == false);
     while (searchStr.indexOf('#incorrect_replies') >= 0) {
         searchStr = searchStr.replace('#incorrect_replies', incorrectReplies.length);
@@ -63,9 +63,9 @@ quizFillIncorrectReplies = function (itemMessageSender, string) {
 
 
 // CompletedQuestions is an array of Questions within a Quiz to tally for
-quizResults = function (ChatID, CompletedQuestions) { // note Quiz will always be interaction.quiz for now ...
+quizResults = function (ChatID, CompletedQuestions) {
     if ((ChatID != undefined) && (ChatID.quiz != undefined)) {
-         var itemQuiz = ChatID.quiz.find(o => o.id === interaction.quiz.id); // Quiz is hard coded for now
+         var itemQuiz = ChatID.quiz.find(o => o.id === ChatID.currentQuizID);
          if (itemQuiz != undefined) {
              var itemQuestions = itemQuiz.question;
              var ChatIDQuestions = itemQuiz.question;
@@ -182,7 +182,7 @@ WAPI.waitNewMessages(false, async (data) => {
 
             // STATUS of CURRENT QUIZ
             if (interaction.quiz && interaction.quiz.active == true)
-                window.log("DEBUG: quiz: current quiz: '" + interaction.quiz.id + "' is active");
+                window.log("DEBUG: quiz: current quiz: '" + interaction.quiz.id + "' is active default");
             else
                 window.log("DEBUG: quiz: current quiz '" + interaction.quiz.id + "' is NOT active");
 
@@ -205,26 +205,20 @@ WAPI.waitNewMessages(false, async (data) => {
                 }
                 window.log("DEBUG: itemMessageSender: chatId created for " + itemMessageSender.chatId)
             }
-
-            // Is itemMessageSender's current quiz defined?
             if (itemMessageSender.currentQuizID == undefined) {
-                window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " current quizID is undefined");
                 var exactMatch = intents.bot.find(obj => obj.exact.find(ex => ex == message.body.toLowerCase()));
                 if (exactMatch != undefined) {
-                    if (exactMatch.quizID != undefined) {
-                        window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " message requests quizID: " + exactMatch.quizID);
-                        itemMessageSender.currentQuizID = exactMatch.quizID;
-                    } else {
-                        itemMessageSender.currentQuizID = interaction.quiz.id;
-                    }
-                        
+		        if (exactMatch.quizID != undefined) {
+                            window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " setting currentQuizID to message requested quizID: " + exactMatch.quizID);
+                            itemMessageSender.currentQuizID = exactMatch.quizID;
+                        } else {
+                            window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " currentQuizID is undefined, no message requested quizID, setting to interaction.quiz.id" + interaction.quiz.id);
+                            itemMessageSender.currentQuizID = interaction.quiz.id;
+                        }
                 }
             } else {
-		// for now take old default ... 
-                window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " has existing currentQuizID: " + itemMessageSender.currentQuizID);
-            }
-
-
+                window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " currentQuizID remains unchanged " + itemMessageSender.currentQuizID);
+	    }
 
             // IS CURRENT QUIZ a NEW QUIZ for CHAT-ID? Generate itemMessageSender.quiz
             var itemQuiz = itemMessageSender.quiz.find(o => o.id === itemMessageSender.currentQuizID);
@@ -281,10 +275,10 @@ WAPI.waitNewMessages(false, async (data) => {
                     if (itemQuiz.preamble != undefined) {
                         window.log("SEND: QUIZ QUESTION PREAMBLE to " + itemMessageSender.chatId + " question.preamble[]: " + itemQuestion.preamble);
                         response = itemQuestion.preamble.toString();
+                        window.log("DEBUG: RESPONSE:" + response);
 		        response = quizFillName(itemMessageSender, response);
                         response = quizFillCorrectReplies(itemMessageSender, response);
                         response = quizFillIncorrectReplies(itemMessageSender, response);
-                        window.log("DEBUG: RESPONSE:" + response);
                         WAPI.sendMessage2(itemMessageSender.chatId, response);
 		    }
                     window.log("SEND: QUIZ QUESTION TEXT to " + itemMessageSender.chatId + " question.text: " + itemQuestion.text);
@@ -312,6 +306,9 @@ WAPI.waitNewMessages(false, async (data) => {
                     }
                     // Quiz complete. Mark as so.
                     itemQuiz.isCompleted = true;
+                    delete itemMessageSender.currentQuizID;
+                    if (itemMessageSender.currentQuizID == undefined)
+                        window.log("DEBUG: QUIZ currentQuizID deleted");
                 }
 
                 putStoreFile(itemMessageSender.chatId, JSON.stringify(itemMessageSender, null, 4));
@@ -322,7 +319,9 @@ WAPI.waitNewMessages(false, async (data) => {
                 //}
             } else {
                 window.log("DEBUG: " + itemMessageSender.chatId  + " has already completed quiz ID " + itemMessageSender.currentQuizID)
-            }
+                window.log("DEBUG: deleting currentQuizID with value of " + itemMessageSender.currentQuizID);
+                delete itemMessageSender.currentQuizID;
+	    }
 
             // --- QUIZ END ---
             if ( (itemQuiz == undefined) || (itemQuiz.hasBegun != true || itemQuiz.isCompleted == true) ) {
