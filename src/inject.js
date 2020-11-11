@@ -186,14 +186,17 @@ WAPI.waitNewMessages(false, async (data) => {
             else
                 window.log("DEBUG: quiz: current quiz '" + interaction.quiz.id + "' is NOT active");
 
-            // set a single ChatId to test
-            var itemMessageSender = chatIdStore.chat.find(o => o.chatId == message.chatId);
+            // find itemMessageSender in our chatIDStore
+            //var itemMessageSender = chatIdStore.chat.find(o => o.chatId == message.chatId);
+            var itemMessageSender = chatIdStore.find(o => o.chatId == message.chatId);
 
-            // STATUS of CHAT-ID? Generate itemMessageSender object
+            // If itemMessageSender was not in our chatIDStore, create a new record
             if (itemMessageSender == undefined) {
                 window.log('DEBUG: itemMessageSender: chatId does not exist');
-                chatIdStore.chat.push({"chatId": message.chatId,"quiz":[]});
-                itemMessageSender = chatIdStore.chat.find(o => o.chatId === message.chatId);
+                //chatIdStore.chat.push({"chatId": message.chatId,"quiz":[]});
+                chatIdStore.push({"chatId": message.chatId,"quiz":[]});
+                //itemMessageSender = chatIdStore.chat.find(o => o.chatId === message.chatId);
+                itemMessageSender = chatIdStore.find(o => o.chatId === message.chatId);
                 window.log("DEBUG: KnownChatIds " + JSON.stringify(KnownChatIds));
                 if (KnownChatIds.includes(message.chatId._serialized)) {
                       itemMessageSender.contact = WAPI.getContact(message.chatId);
@@ -203,24 +206,45 @@ WAPI.waitNewMessages(false, async (data) => {
                 window.log("DEBUG: itemMessageSender: chatId created for " + itemMessageSender.chatId)
             }
 
+            // Is itemMessageSender's current quiz defined?
+            if (itemMessageSender.currentQuizID == undefined) {
+                window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " current quizID is undefined");
+                var exactMatch = intents.bot.find(obj => obj.exact.find(ex => ex == message.body.toLowerCase()));
+                if (exactMatch != undefined) {
+                    if (exactMatch.quizID != undefined) {
+                        window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " message requests quizID: " + exactMatch.quizID);
+                        itemMessageSender.currentQuizID = exactMatch.quizID;
+                    } else {
+                        itemMessageSender.currentQuizID = interaction.quiz.id;
+                    }
+                        
+                }
+            } else {
+		// for now take old default ... 
+                window.log("DEBUG: itemMessageSender: " + itemMessageSender.chatId + " has existing currentQuizID: " + itemMessageSender.currentQuizID);
+            }
+
+
+
             // IS CURRENT QUIZ a NEW QUIZ for CHAT-ID? Generate itemMessageSender.quiz
-            var itemQuiz = itemMessageSender.quiz.find(o => o.id === interaction.quiz.id);
+            var itemQuiz = itemMessageSender.quiz.find(o => o.id === itemMessageSender.currentQuizID);
             if (itemQuiz == undefined) {
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' does NOT exist in " + itemMessageSender.chatId + "'s  profile");
+                window.log("DEBUG: chatId: current quiz '" + itemMessageSender.currentQuizID + "' does NOT exist in " + itemMessageSender.chatId + "'s  profile");
                 // Populate itemMessageSender.itemQuiz with current quiz object
-                itemMessageSender.quiz.push({"id":interaction.quiz.id,"preamble":interaction.quiz.preamble,"question":[],"postamble":interaction.quiz.postamble,"isCompleted":false});
-                itemQuiz = itemMessageSender.quiz.find(o => o.id === interaction.quiz.id);
-                for (let q of interaction.quiz.question) {
+                var itemCurrentQuiz = quizStore.find(o => o.quiz.id === itemMessageSender.currentQuizID);
+                window.log("DEBUG: itemCurrentQuiz.quiz.id: " + itemCurrentQuiz.quiz.id);
+		// TODO TEST itemCurrentQuiz != undefined here
+                itemMessageSender.quiz.push({"id":itemCurrentQuiz.quiz.id,"preamble":itemCurrentQuiz.quiz.preamble,"question":[],"postamble":itemCurrentQuiz.quiz.postamble,"isCompleted":false});
+                itemQuiz = itemMessageSender.quiz.find(o => o.id === itemCurrentQuiz.quiz.id);
+                for (let q of itemCurrentQuiz.quiz.question) {
                     itemQuiz.question.push({"preamble":q.preamble,"postamble":q.postamble,"text":q.text,"answer":q.answer,"isCompleted":false,"reply":{}});
                 }
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' element created for " + itemMessageSender.chatId + "'s  profile");
+                window.log("DEBUG: chatId: current quiz '" + itemMessageSender.currentQuizID + "' element created for " + itemMessageSender.chatId + "'s  profile");
             } else
-                window.log("DEBUG: chatId: current quiz '" + interaction.quiz.id + "' already exists in " + itemMessageSender.chatId + "'s  profile");
+                window.log("DEBUG: chatId: current quiz '" + itemMessageSender.currentQuizID + "' already exists in " + itemMessageSender.chatId + "'s  profile");
 
 
             if (itemQuiz.isCompleted == false) {
-                // END: SETUP/LOOKUP DATASTORE STRUCTURE FOR A MESSAGE SENDER
-                // ------------------------------------------------
 
                 var itemQuestion = itemQuiz.question.find(o => o.isCompleted != true);
 
@@ -297,7 +321,7 @@ WAPI.waitNewMessages(false, async (data) => {
                 //    WAPI.sendMessage2(itemMessageSender.chatId, response);
                 //}
             } else {
-                window.log("DEBUG: " + itemMessageSender.chatId  + "has already completed this quiz!!")
+                window.log("DEBUG: " + itemMessageSender.chatId  + " has already completed quiz ID " + itemMessageSender.currentQuizID)
             }
 
             // --- QUIZ END ---
