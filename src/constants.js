@@ -27,3 +27,4 @@ this.DEFAULT_CHROMIUM_ARGS = [
 ];
 this.DEFAULT_DATA_DIR = path.join(process.cwd(), "chromium-data");
 this.DEFAULT_CHATID_STORE_DIR = path.join(process.cwd(), "chatIdStore");
+this.DEFAULT_QUIZ_STORE_DIR = path.join(process.cwd(), "quizStore");
