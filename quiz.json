@@ -5,10 +5,10 @@
         "webhook": "http://localhost:3000/api/incoming-webhook"
     },
     "quiz": {
-        "id": "Pearl006",
+        "id": "Pearl008",
         "active": true,
         "preamble": [
-            "Hello #name! I’m Pearl.\nWelcome to the quiz for episode 6 of The Pearl. Let´s begin with question 1. Please answer by typing the number of the correct answer."
+            "Hello #name! I’m Pearl.\nWelcome to the quiz for episode 8 of The Pearl. Let´s begin with question 1. Please answer by typing the number of the correct answer."
         ],
         "postamble": [
             "The pearl has many hidden treasures. You answered #correct_replies questions correctly. If you answer all the quizzes you will automatically take part in a competition where you can win one of many prizes.\nPlease contact me again. Yours, Pearl."
@@ -22,41 +22,41 @@
                     "Let me ask you the next question."
                 ],
                 "text": [
-                    "➡ Which of the following is not a discipline associated with the development of  a vaccine against Covid-19?"
+                    "➡ Which helpline number offers help to abused children?"
                 ],
                 "answer": [
                     {
                         "isCorrect": false,
-                        "text": "🔸1. biotechnology",
+                        "text": "🔸1. 123456789",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "1"
                         ],
-                        "response": "Biotechnology is very much needed for the development of a vaccine against Covid-19, while ontology is the study of being and even though it might be interesting to engage in it, it is not particularly helpful for developing a vaccine."
+                        "response": "No. 116 is the official children hotline number for Uganda. There are 10 counsellors working on 9 hour shifts, trying to listen to the 750 - 1000 calls daily."
                     },
                     {
                         "isCorrect": true,
-                        "text": "🔸2. ontology.",
+                        "text": "🔸2. 116",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "2"
                         ],
-                        "response": "Yes, ontology is a discipline not associated with the development of  a vaccine against Covid-19. It is the study of being and even though it might be interesting to engage in it, it is not particularly helpful for developing a vaccine. "
+                        "response": "Yes, 116 is the official children hotline number for Uganda. There are 10 counsellors working on 9 hour shifts, trying to listen to the 750 - 1000 calls daily."
                     },
                     {
                         "isCorrect": false,
-                        "text": "🔸3.  proteomics ",
+                        "text": "🔸3.  122",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "3"
                         ],
-                        "response": "Proteomics is very much needed for the development of a vaccine against Covid-19. Proteomics is the study of proteins which are vital parts of living organisms. The discipline not needed in developing a vaccine is ontology, the study of being: And even though it might be interesting to engage in it, it is not particularly helpful for developing a vaccine. "
+                        "response": "No, 116 is the official children hotline number for Uganda. There are 10 counsellors working on 9 hour shifts, trying to listen to the 750 - 1000 calls daily."
                     }
                 ]
             },
@@ -68,13 +68,13 @@
                     "Let me ask you the next question."
                 ],
                 "text": [
-                    "➡ Uganda’s Vaccine Research Institute is aiming to start a COVID-19 vaccine clinical trial in December, 2020. Which European College do they partner with?"
+                    "➡ Where do most of the 21.260 reported child abuse cases happen?"
                 ],
                 "answer": [
                     {
                         "isCorrect": false,
                         "text": [
-                            "🔸1. Charité in Berlin (Germany)"
+                            "🔸1. In the dark forests of the Ugandan jungle."
                         ],
                         "exact": [
                             ""
@@ -82,29 +82,29 @@
                         "contains": [
                             "1"
                         ],
-                        "response": "No. Correct answer is Imperial College London."
+                        "response": "No. Child abuse happens at home –  by parents or relatives. If you see or notice anything of worry in your neighborhood, please call out for help to your local community structures, police or your local council."
                     },
                     {
-                        "isCorrect": true,
-                        "text": "🔸2. Imperial College London (UK)",
+                        "isCorrect": false,
+                        "text": "🔸2. In the dirty streets and back-alleys of the capital Kampala.",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "2"
                         ],
-                        "response": "Yes, correct. They are partnering with the Imperial College London."
+                        "response": "No. Child abuse happens at home –  by parents or relatives. If you see or notice anything of worry in your neighborhood, please call out for help to your local community structures, police or your local council."
                     },
                     {
-                        "isCorrect": false,
-                        "text": "🔸3. University Hospital Leuven (Netherlands)",
+                        "isCorrect": true,
+                        "text": "🔸3. In the homes and houses of the children.",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "3"
                         ],
-                        "response": "No. Correct answer is Imperial College London."
+                        "response": "Yes: Child abuse happens at home –  by parents or relatives. If you see or notice anything of worry in your neighborhood, please call out for help to your local community structures, police or your local council."
                     }
                 ]
             },
@@ -116,41 +116,41 @@
                     "The pearl has many hidden treasures. You answered #correct_replies questions correctly. If you answer all the quizzes you will automatically take part in a competition where you can win one of many prizes."
                 ],
                 "text": [
-                    "➡ How are the scientists in the Ugandan/ London collaboration developing a vaccine against Covid-19?"
+                    "➡ „Pandemics will permanently damage our shared future“ - states UNICEF Executive Director Henrietta Fore. What does she mean?"
                 ],
                 "answer": [
                     {
-                        "isCorrect": false,
-                        "text": "🔸1. The scientists drink Corona beer and afterwards examine their urine.",
+                        "isCorrect": true,
+                        "text": "🔸1. Pandemics are hard especially for children - our future. They need care, love, support and guidance in such pressing times.",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "1"
                         ],
-                        "response": "Haha. If it would be this easy, Dr. Hope would not have so much trouble with her husband. The correct answer is: They use synthetic strands of genetic code, which looks very promising: In test trials this vaccine produced highly specific antibodies against Covid-19 in mice, which were able to neutralise the virus."
+                        "response": "Yes, Pandemics are especially hard to children. Henrietta Fore´s statement goes on like this: „We know that, in any crisis, the young and the most vulnerable suffer disproportionately. This pandemic is no different. It is our responsibility to prevent suffering, save lives and protect the health of every child.“"
                     },
                     {
-                        "isCorrect": true,
-                        "text": "🔸2. The scientists are mimicking the virus with synthetic strands of genetic code.",
+                        "isCorrect": false,
+                        "text": "🔸2. Pandemics change our economic livelihood.",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "2"
                         ],
-                        "response": "Yes, they use synthetic strands of genetic code, which looks very promising: In test trials this vaccine produced highly specific antibodies against Covid-19 in mice, which were able to neutralise the virus."
+                        "response": "While Pandemics also change our economic livelihood, it is the children of this world who are our real shared future. Henrietta Fore´s statement goes on like this: „We know that, in any crisis, the young and the most vulnerable suffer disproportionately. This pandemic is no different. It is our responsibility to prevent suffering, save lives and protect the health of every child.“"
                     },
                     {
                         "isCorrect": false,
-                        "text": "🔸3.  The scientists use a weakened form of the virus.",
+                        "text": "🔸3.  Pandemics change the DNA of our bodies.",
                         "exact": [
                             ""
                         ],
                         "contains": [
                             "3"
                         ],
-                        "response": "No. Some vaccines are based on a weakened form of the virus but right now the best results seem to come from using synthetic strands of genetic code: In test trials this vaccine produced highly specific antibodies against Covid-19 in mice, which were able to neutralise the virus."
+                        "response": "No. While nearly 10 percent of the human genome is made of bits of virus DNA, Henrietta Fore meant the children of this world when she talks about our shared future. Her statement goes on like this: „We know that, in any crisis, the young and the most vulnerable suffer disproportionately. This pandemic is no different. It is our responsibility to prevent suffering, save lives and protect the health of every child.“"
                     }
                 ]
             }

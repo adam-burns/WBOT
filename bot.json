@@ -21,41 +21,47 @@
             "response": "Do the The Pearl Episode 1 Quiz",
             "quizID":"Pearl001"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 2", "q 2", "quiz2","q2"],
             "response": "Do the The Pearl Episode 2 Quiz",
             "quizID":"Pearl002"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 3", "q 3", "quiz3","q3"],
             "response": "Do the The Pearl Episode 3 Quiz",
             "quizID":"Pearl003"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 4", "q 4", "quiz4","q4"],
             "response": "Do the The Pearl Episode 4 Quiz",
             "quizID":"Pearl004"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 5", "q 5", "quiz5","q5"],
             "response": "Do the The Pearl Episode 5 Quiz",
             "quizID":"Pearl005"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 6", "q 6", "quiz6","q6"],
             "response": "Do the The Pearl Episode 6 Quiz",
             "quizID":"Pearl006"
         },
-       {
+        {
             "contains": [],
             "exact": ["quiz 7", "q 7", "quiz7","q7"],
             "response": "Do the The Pearl Episode 7 Quiz",
             "quizID":"Pearl007"
+        },
+        {
+            "contains": [],
+            "exact": ["quiz 8", "q 8", "quiz8","q8"],
+            "response": "Do the The Pearl Episode 8 Quiz",
+            "quizID":"Pearl008"
         },
         {
             "contains": [],
@@ -128,10 +134,16 @@
             "exact": ["audio 7", "a 7", "audio7","a7"],
             "response": "Listen to The Pearl Episode 7",
             "file":"MiCT_ThePearl_Episode_007_AudioENG.mp3"
+        },
+        {
+            "contains": [],
+            "exact": ["audio 8", "a 8", "audio8","a8"],
+            "response": "Listen to The Pearl Episode 8",
+            "file":"MiCT_ThePearl_Episode_008_AudioENG.mp3"
         }
     ],
     "blocked": [],
-    "noMatch":"The pearl has many hidden treasures.\nTo listen to the current episode, type\n➡ audio 7\n or for the previous episode\n➡ audio 6",
+    "noMatch":"The pearl has many hidden treasures.\nTo listen to the current episode, type\n➡ audio 8\n or for the previous episode\n➡ audio 7",
     "smartreply":{
         "suggestions":[],
 	"clicktosend":true
