@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 window.log(`DEBUG:  #### INJECT CODE EXECUTED!!!`);
 // --
 // show Current active Quiz details
@@ -92,7 +91,7 @@ if (intents.appconfig.replyUnreadMsg) {
             }
         }
         console.log(processData)
-        processMessages(processData)
+        // processMessages(processData)
     })
 }
 
@@ -215,9 +214,6 @@ quizResults = function (ChatID, CompletedQuestions) { // note Quiz will always b
 ////window.log("TEST: testGroup quizResults: " + quizResults(testGroup));
 
 WAPI.waitNewMessages(false, async (data) => {
-=======
-async function processMessages(data) {
->>>>>>> c3a4818453b7381bd6f81b02aac5d196cbd37ccc
     for (let i = 0; i < data.length; i++) {
         //fetch API to send and receive response from server
         let message = data[i];
@@ -397,7 +393,6 @@ async function processMessages(data) {
                 //    WAPI.sendMessage2(itemPhone.chatId, response);
                 //}
             } else {
-<<<<<<< HEAD
                 window.log("DEBUG: " + itemPhone.chatId  + "has already completed this quiz!!")
             }
 
@@ -437,36 +432,13 @@ async function processMessages(data) {
         } else {
 		window.log(`DEBUG: Message type ${message.type} received`);
 	}
-=======
-                console.log("No partial match found");
-            }
-            WAPI.sendSeen(message.chatId._serialized);
-            response = response.fillVariables({ name: message.sender.pushname, phoneNumber: message.sender.id.user, greetings: greetings() })
-            await waitBeforeSending(exactMatch, PartialMatch)
-            if (exactMatch != undefined || PartialMatch != undefined) {
-                //returning if there is no file
-                if ((exactMatch || PartialMatch).file != undefined) {
-                    files = await resolveSpintax((exactMatch || PartialMatch).file);
-                    window.getFile(files).then((base64Data) => {
-                        console.log(base64Data);
-                        WAPI.sendImage(base64Data, message.chatId._serialized, (exactMatch || PartialMatch).file, response);
-                    }).catch((error) => {
-                        window.log("Error in sending file\n" + error);
-                    })
-                } else {
-                    WAPI.sendMessage2(message.chatId._serialized, response);
-                }
-            }
-            //sending file if there is any
-        }
->>>>>>> c3a4818453b7381bd6f81b02aac5d196cbd37ccc
     }
 }
 
-WAPI.waitNewMessages(false, async (data) => {
-    console.log(data)
-    processMessages(data)
-});
+// WAPI.waitNewMessages(false, async (data) => {
+//     console.log(data)
+//     processMessages(data)
+// });
 WAPI.addOptions = function () {
     var suggestions = "";
     intents.smartreply.suggestions.map((item) => {
