@@ -1,8 +1,10 @@
 {
     "appconfig": {
         "headless": false,
-        "isGroupReply":true,
-        "webhook":"http://localhost:3000/api/incoming-webhook"
+        "isGroupReply":false,
+        "webhook":"http://localhost:3000/api/incoming-webhook",
+        "downloadMedia": false,
+        "replyUnreadMsg": false
     },
     "bot": [
         {
@@ -13,7 +15,8 @@
         {
             "contains": [],
             "exact": ["how are you?"],
-            "response": "I am {good {thanks| thank you}|great}. How about you?"
+            "response": "I am {good {thanks| thank you}|great}. How about you?",
+            "afterSeconds":3
         },
         {
             "contains": [],

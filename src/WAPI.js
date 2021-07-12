@@ -31,6 +31,7 @@ if (!window.Store) {
                 { id: "UserConstructor", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.isServer && module.default.prototype.isUser) ? module.default : null },
                 { id: "SendTextMsgToChat", conditions: (module) => (module.sendTextMsgToChat) ? module.sendTextMsgToChat : null },
                 { id: "SendSeen", conditions: (module) => (module.sendSeen) ? module.sendSeen : null },
+                { id: "Me", conditions: (module) => (module.PLATFORMS && module.Conn) ? module.default : null },
                 { id: "sendDelete", conditions: (module) => (module.sendDelete) ? module.sendDelete : null }
             ];
         for (let idx in modules) {
@@ -71,7 +72,7 @@ if (!window.Store) {
             webpackJsonp([], {'parasite': (x, y, z) => getStore(z)}, ['parasite']);
         } else {
             let tag = new Date().getTime();
-			webpackChunkbuild.push([
+			webpackChunkwhatsapp_web_client.push([
 				["parasite" + tag],
 				{
 
@@ -599,10 +600,10 @@ window.WAPI.getGroupAdmins = async function (id, done) {
  * @returns {Array|*|$q.all}
  */
 window.WAPI.getMe = function (done) {
-    const rawMe = window.Store.Contact.get(window.Store.Conn.me);
+    const rawMe = window.Store.Contact.get(Store.Me.wid);
 
-    if (done !== undefined) done(rawMe.all);
-    return rawMe.all;
+    if (done !== undefined) done(rawMe.attributes);
+    return rawMe.attributes;
 };
 
 window.WAPI.isLoggedIn = function (done) {
@@ -1424,3 +1425,42 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
         done(true); return true;
     })
 }
+
+WAPI.readBlobAsync = (blob) => {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+
+        reader.onerror = reject;
+
+        reader.readAsDataURL(blob);
+    });
+};
+
+WAPI.downloadBuffer = (url) => {
+    return new Promise(function (resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                resolve(xhr.response);
+            } else {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            }
+        };
+        xhr.onerror = function () {
+            reject({
+                status: this.status,
+                statusText: xhr.statusText
+            });
+        };
+        xhr.send(null);
+    });
+};

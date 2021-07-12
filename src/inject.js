@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 window.log(`DEBUG:  #### INJECT CODE EXECUTED!!!`);
 // --
 // show Current active Quiz details
@@ -21,6 +22,94 @@ window.log(`DEBUG:  #### INJECT CODE EXECUTED!!!`);
 //  return Function(` return (${str})`)()
 //
 //}
+
+function greetings() {
+    let date = new Date();
+    hour = date.getHours();
+
+    if (hour >= 0 && hour < 12) {
+        return "Good Morning";
+    }
+
+    if (hour >= 12 && hour < 18) {
+        return "Good evening";
+    }
+
+    if (hour >= 18 && hour < 24) {
+        return "Good night";
+    }
+}
+
+async function downloadFile(message) {
+    let filename = ''
+    if (message.type === "document") {
+        filename = `${message.filename.split(".")[0]}_${Math.random().toString(36).substring(4)}`
+    } else if (message.type === "image" || message.type === "video" || message.type === "ptt" || message.type === "audio") {
+        filename = `${message.chatId.user}_${Math.random().toString(36).substring(4)}`
+    } else {
+        window.log("couldn't recognize message type. Skipping download")
+        return
+    }
+    const buffer = await WAPI.downloadBuffer(message.deprecatedMms3Url)
+    const decrypted = await window.Store.CryptoLib.decryptE2EMedia(message.type, buffer, message.mediaKey, message.mimetype);
+    const data = await window.WAPI.readBlobAsync(decrypted._blob);
+    saveFile(data.split(',')[1], filename, message.mimetype)
+    return data;
+}
+
+//Updating string prototype to support variables
+String.prototype.fillVariables = String.prototype.fillVariables ||
+    function () {
+        "use strict";
+        var str = this.toString();
+        if (arguments.length) {
+            var t = typeof arguments[0];
+            var key;
+            var args = ("string" === t || "number" === t) ?
+                Array.prototype.slice.call(arguments)
+                : arguments[0];
+
+            for (key in args) {
+                str = str.replace(new RegExp("\\[#" + key + "\\]", "gi"), args[key]);
+            }
+        }
+
+        return str;
+    };
+
+//check if there is pending unread messages. if yes then push it to data
+if (intents.appconfig.replyUnreadMsg) {
+    // check for pending unread messages
+    log("=====> Keep in mind that bot will reply to unread messages but you have to manually mark them as seen.")
+    WAPI.getUnreadMessages(false, true, true, (messages) => {
+        let processData = []
+        data = messages.filter((m) => !m.archive)
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+            for (let j = 0; j < element.messages.length; j++) {
+                const message = element.messages[j];
+                processData.push(message)
+            }
+        }
+        console.log(processData)
+        processMessages(processData)
+    })
+}
+
+function delay(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};
+
+async function waitBeforeSending(exactMatch, PartialMatch) {
+    if (exactMatch || PartialMatch) {
+        if ((exactMatch || PartialMatch).afterSeconds) {
+            await delay((exactMatch || PartialMatch).afterSeconds * 1000)
+        }
+    }
+}
+
 
 quizFillName = function (itemPhone, string) {
     var searchStr = string;
@@ -126,6 +215,9 @@ quizResults = function (ChatID, CompletedQuestions) { // note Quiz will always b
 ////window.log("TEST: testGroup quizResults: " + quizResults(testGroup));
 
 WAPI.waitNewMessages(false, async (data) => {
+=======
+async function processMessages(data) {
+>>>>>>> c3a4818453b7381bd6f81b02aac5d196cbd37ccc
     for (let i = 0; i < data.length; i++) {
         //fetch API to send and receive response from server
         let message = data[i];
@@ -134,7 +226,14 @@ WAPI.waitNewMessages(false, async (data) => {
         body.type = 'message';
         body.user = message.chatId._serialized;
         //body.original = message;
+        if (intents.appconfig.downloadMedia) {
+            downloadFile(message)
+        }
         if (intents.appconfig.webhook) {
+            //if message is image then download it first and then call an webhook
+            if (message.type == "image") {
+                body.base64DataFile = await downloadFile(message)
+            }
             fetch(intents.appconfig.webhook, {
                 method: "POST",
                 body: JSON.stringify(body),
@@ -148,6 +247,7 @@ WAPI.waitNewMessages(false, async (data) => {
                 //replying to the user based on response
                 if (response && response.length > 0) {
                     response.forEach(itemResponse => {
+                        itemResponse.text = itemResponse.text.fillVariables({ name: message.sender.pushname, phoneNumber: message.sender.id.user, greetings: greetings() });
                         WAPI.sendMessage2(message.chatId._serialized, itemResponse.text);
                         //sending files if there is any 
                         if (itemResponse.files && itemResponse.files.length > 0) {
@@ -164,13 +264,13 @@ WAPI.waitNewMessages(false, async (data) => {
         window.log(`Message from ${message.chatId.user} checking..`);
         if (intents.blocked.indexOf(message.chatId.user) >= 0) {
             window.log("number is blocked by BOT. no reply");
-            return;
+            continue;
         }
         if (message.type == "chat") {
             //message.isGroupMsg to check if this is a group
             if (message.isGroupMsg == true && intents.appconfig.isGroupReply == false) {
                 window.log("Message received in group and group reply is off. so will not take any actions.");
-                return;
+                continue;
             }
 
             // --- QUIZ START ---
@@ -297,6 +397,7 @@ WAPI.waitNewMessages(false, async (data) => {
                 //    WAPI.sendMessage2(itemPhone.chatId, response);
                 //}
             } else {
+<<<<<<< HEAD
                 window.log("DEBUG: " + itemPhone.chatId  + "has already completed this quiz!!")
             }
 
@@ -336,7 +437,35 @@ WAPI.waitNewMessages(false, async (data) => {
         } else {
 		window.log(`DEBUG: Message type ${message.type} received`);
 	}
+=======
+                console.log("No partial match found");
+            }
+            WAPI.sendSeen(message.chatId._serialized);
+            response = response.fillVariables({ name: message.sender.pushname, phoneNumber: message.sender.id.user, greetings: greetings() })
+            await waitBeforeSending(exactMatch, PartialMatch)
+            if (exactMatch != undefined || PartialMatch != undefined) {
+                //returning if there is no file
+                if ((exactMatch || PartialMatch).file != undefined) {
+                    files = await resolveSpintax((exactMatch || PartialMatch).file);
+                    window.getFile(files).then((base64Data) => {
+                        console.log(base64Data);
+                        WAPI.sendImage(base64Data, message.chatId._serialized, (exactMatch || PartialMatch).file, response);
+                    }).catch((error) => {
+                        window.log("Error in sending file\n" + error);
+                    })
+                } else {
+                    WAPI.sendMessage2(message.chatId._serialized, response);
+                }
+            }
+            //sending file if there is any
+        }
+>>>>>>> c3a4818453b7381bd6f81b02aac5d196cbd37ccc
     }
+}
+
+WAPI.waitNewMessages(false, async (data) => {
+    console.log(data)
+    processMessages(data)
 });
 WAPI.addOptions = function () {
     var suggestions = "";
